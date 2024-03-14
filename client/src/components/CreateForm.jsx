@@ -1,5 +1,4 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState } from "react";
 import axios from "axios";
 
 const CreateForm = () => {
@@ -15,7 +14,25 @@ const CreateForm = () => {
   const [complemento, setComplemento] = useState("");
   const [profissao, setProfissao] = useState("");
 
-  const navigate = useNavigate();
+  const handleCEPChange = async (e) => {
+    const cepValue = e.target.value;
+    setCep(cepValue);
+
+    if (cepValue.length === 8) {
+      try {
+        const response = await axios.get(
+          `https://viacep.com.br/ws/${cepValue}/json/`
+        );
+        const data = response.data;
+        setRua(data.logradouro);
+        setCidade(data.localidade);
+        setUf(data.uf);
+        setBairro(data.bairro);
+      } catch (error) {
+        console.error("Error al obtener los datos de dirección:", error);
+      }
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -36,24 +53,21 @@ const CreateForm = () => {
           profissao,
         }
       );
-      console.log("Usuario criado com sucesso", response.data);
-
-      setTimeout(() => {
-        navigate("/");
-      });
+      console.log("Usuario creado con éxito", response.data);
     } catch (error) {
-      console.error("Error ao criar usuario", error);
+      console.error("Error al crear usuario", error);
     }
   };
 
   return (
-    <form action="">
+    <form onSubmit={handleSubmit}>
       <div className="flex flex-col mb-3 ">
         <span className="font-[500] text-[18px] mb-1">Nome</span>
         <input
           className="w-full h-[40px] rounded-md font-[500] text-[16px] px-2 border"
           type="text"
           placeholder="Escreva seu nome"
+          value={nome}
           onChange={(e) => setNome(e.target.value)}
         />
       </div>
@@ -63,6 +77,7 @@ const CreateForm = () => {
           className="w-full h-[40px] rounded-md font-[500] text-[16px] px-2 border"
           type="text"
           placeholder="Escreva seu sobrenome"
+          value={sobrenome}
           onChange={(e) => setSobrenome(e.target.value)}
         />
       </div>
@@ -72,6 +87,7 @@ const CreateForm = () => {
           className="w-full h-[40px] rounded-md font-[500] text-[16px] px-2 border"
           type="text"
           placeholder="Escreva seu endereço"
+          value={endereco}
           onChange={(e) => setEndereco(e.target.value)}
         />
       </div>
@@ -79,9 +95,10 @@ const CreateForm = () => {
         <span className="font-[500] text-[18px] mb-1">CEP</span>
         <input
           className="w-full h-[40px] rounded-md font-[500] text-[16px] px-2 border"
-          type="number"
+          type="text"
           placeholder="Escreva seu CEP"
-          onChange={(e) => setCep(e.target.value)}
+          value={cep}
+          onChange={handleCEPChange}
         />
       </div>
       <div className="flex flex-col mb-3">
@@ -90,6 +107,7 @@ const CreateForm = () => {
           className="w-full h-[40px] rounded-md font-[500] text-[16px] px-2 border"
           type="text"
           placeholder="Escreva sua rua"
+          value={rua}
           onChange={(e) => setRua(e.target.value)}
         />
       </div>
@@ -99,6 +117,7 @@ const CreateForm = () => {
           className="w-full h-[40px] rounded-md font-[500] text-[16px] px-2 border"
           type="text"
           placeholder="Escreva sua cidade"
+          value={cidade}
           onChange={(e) => setCidade(e.target.value)}
         />
       </div>
@@ -108,6 +127,7 @@ const CreateForm = () => {
           className="w-full h-[40px] rounded-md font-[500] text-[16px] px-2 border"
           type="text"
           placeholder="Escreva seu UF"
+          value={uf}
           onChange={(e) => setUf(e.target.value)}
         />
       </div>
@@ -117,6 +137,7 @@ const CreateForm = () => {
           className="w-full h-[40px] rounded-md font-[500] text-[16px] px-2 border"
           type="text"
           placeholder="Escreva seu bairro"
+          value={bairro}
           onChange={(e) => setBairro(e.target.value)}
         />
       </div>
@@ -126,6 +147,7 @@ const CreateForm = () => {
           className="w-full h-[40px] rounded-md font-[500] text-[16px] px-2 border"
           type="number"
           placeholder="Escreva seu numero"
+          value={numero}
           onChange={(e) => setNumero(e.target.value)}
         />
       </div>
@@ -135,23 +157,23 @@ const CreateForm = () => {
           className="w-full h-[40px] rounded-md font-[500] text-[16px] px-2 border"
           type="text"
           placeholder="Escreva seu complemento"
+          value={complemento}
           onChange={(e) => setComplemento(e.target.value)}
         />
       </div>
-
       <div className="flex flex-col mb-3">
         <span className="font-[500] text-[18px] mb-1">Profissão</span>
         <input
           className="w-full h-[40px] rounded-md font-[500] text-[16px] px-2 border"
           type="text"
           placeholder="Escreva sua profissão"
+          value={profissao}
           onChange={(e) => setProfissao(e.target.value)}
         />
       </div>
-
       <div className="flex justify-end mt-10">
         <button
-          onClick={handleSubmit}
+          type="submit"
           className="w-[100px] h-[40px] bg-zinc-800 hover:bg-zinc-600 text-white rounded-md"
         >
           Enviar

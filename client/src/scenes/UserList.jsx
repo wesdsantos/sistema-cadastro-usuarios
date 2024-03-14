@@ -1,9 +1,11 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import NavBar from "../components/NavBar";
 
 const UserList = () => {
   const [users, setUsers] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -19,6 +21,21 @@ const UserList = () => {
 
     fetchUsers();
   }, []);
+
+  const handleDelete = async (id) => {
+    try {
+      const response = await axios.delete(
+        `https://users-platform-api.onrender.com/delete/${id}`
+      );
+      console.log("Usuario deletado", response.data);
+
+      setTimeout(() => {
+        window.location.reload();
+      });
+    } catch (error) {
+      console.error("Erro ao deletar usuario:", error);
+    }
+  };
   return (
     <div className="w-full h-screen flex flex-col items-center">
       <NavBar />
@@ -36,9 +53,21 @@ const UserList = () => {
                 <span className="font-[500] underline">Nome:</span>
                 <span className="font-[400] ml-2">{user.nome}</span>
               </div>
-              <button className="w-[100px] h-[40px] rounded-md bg-zinc-700 text-white">
-                Ver
-              </button>
+              <div className="flex gap-3">
+                <button
+                  onClick={() => navigate(`/usuario/${user._id}`)}
+                  className="w-[100px] h-[40px] rounded-md bg-zinc-700 text-white"
+                >
+                  Ver
+                </button>
+
+                <button
+                  onClick={() => handleDelete(user._id)}
+                  className="w-[100px] h-[40px] rounded-md bg-red-600 text-white"
+                >
+                  Delete
+                </button>
+              </div>
             </div>
           ))}
         </div>
